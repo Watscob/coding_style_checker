@@ -9,6 +9,12 @@ Do not use regex and expandable syntax such as `my_dir/*` or `*.c`
 ## Dependencies
 - [ ] [go](https://golang.org/dl/)
 
+## Required
+Once you have cloned the repository, exec the following command
+```sh
+go get github.com/gookit/color
+```
+
 ## Instructions to use the project without compiling it
 ### Usage
 Go in the cloned directory and execute the following command
