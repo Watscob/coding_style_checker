@@ -53,18 +53,7 @@ func is_function_proto(line string) bool {
         return false
     }
 
-    for ; i < len(line); i++ {
-        if line[i] == ')' {
-            break
-        }
-    }
-
-    if line[i] != ')' {
-        return false
-    }
-
-    i++
-    return i >= len(line)
+    return line[len(line) - 1] == ')'
 }
 
 func get_function_name(line string) string {
