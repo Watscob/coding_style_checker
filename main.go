@@ -57,26 +57,6 @@ func is_function_proto(line string) bool {
     return line[len(line) - 1] == ')'
 }
 
-func get_function_name(line string) string {
-    end := 0
-
-    for index, char := range line {
-        if char == '(' {
-            end = index
-            break
-        }
-    }
-
-    begin := 0
-    for i := end; i > 0; i-- {
-        if line[i] == ' ' {
-            begin = i + 1
-        }
-    }
-
-    return line[begin:end]
-}
-
 func is_open_bracket(line string) bool {
     return len(line) > 0 && line[0] == '{'
 }
@@ -115,7 +95,9 @@ func is_single_line_comment(line string) bool {
         }
     }
 
-    if line[i-2:i] == "//" {
+    if len(line) == 0 {
+        return false
+    } else if line[i-2:i] == "//" {
         return true
     } else if line[i-2:i] == "/*" {
         return len(line) >= 2 && line[len(line)-2:len(line)] == "*/"
@@ -125,7 +107,7 @@ func is_single_line_comment(line string) bool {
 }
 
 func is_begin_comment(line string) bool {
-    for i:= 2; i < len(line); i++ {
+    for i:= 2; i <= len(line); i++ {
         if line[i-2:i] == "/*" {
             return true
         }
@@ -146,7 +128,7 @@ func check_function(fileScanner *bufio.Scanner) (bool, int, string) {
     line := fileScanner.Text()
     if is_function_proto(line) {
         scope_static = is_static(line)
-        function_name = get_function_name(line)
+        function_name = line
 
         for fileScanner.Scan() {
             if is_open_bracket(fileScanner.Text()) {
@@ -180,33 +162,41 @@ func check_function(fileScanner *bufio.Scanner) (bool, int, string) {
     return false, -1, ""
 }
 
-func print_results(file_results results) {
-    fmt.Println()
-    fmt.Printf("Variables:\n")
+func print_results(file_results results, verbose bool) {
+    if verbose {
+        fmt.Println()
+        fmt.Printf("Variables:\n")
+    }
     if file_results.nb_global_variables > MAX_GLOBAL_VARIABLE {
         color.Printf("--> Global: %d\n", file_results.nb_global_variables)
     }
-    fmt.Println()
-    fmt.Printf("Functions:\n")
+    if verbose {
+        fmt.Println()
+        fmt.Printf("Functions:\n")
+    }
     if file_results.nb_functions_in_file > MAX_FUNCTIONS {
         color.Red.Printf("-> Total: %d\n", file_results.nb_functions_in_file)
-    } else {
+    } else if verbose {
         fmt.Printf("-> Total: %d\n", file_results.nb_functions_in_file)
     }
     if file_results.nb_functions_global > MAX_GLOBAL_FUNCTIONS {
         color.Red.Printf("-> Global: %d\n", file_results.nb_functions_global)
-    } else {
+    } else if verbose {
         fmt.Printf("-> Global: %d\n", file_results.nb_functions_global)
     }
-    fmt.Printf("-> Static: %d\n", file_results.nb_functions_static)
-    fmt.Println()
+    if verbose {
+        fmt.Printf("-> Static: %d\n", file_results.nb_functions_static)
+        fmt.Println()
+    }
 }
 
-func check_style_file(filename string) {
+func check_style_file(filename string, verbose bool) {
     file, err := os.Open(filename)
     check_error(err)
 
-    fmt.Printf("----- %s -----\n", filename)
+    if verbose {
+        fmt.Printf("----- %s -----\n", filename)
+    }
     file_results := results{0, 0, 0, 0}
 
     fileScanner := bufio.NewScanner(file)
@@ -216,7 +206,7 @@ func check_style_file(filename string) {
         if nb_line > 0 {
             if nb_line > MAX_LINES_FUNCTION {
                 color.Red.Printf("%s: %d\n", func_name, nb_line)
-            } else {
+            } else if verbose {
                 fmt.Printf("%s: %d\n", func_name, nb_line)
             }
             file_results.nb_functions_in_file++
@@ -235,10 +225,10 @@ func check_style_file(filename string) {
 
     check_error(fileScanner.Err())
     file.Close()
-    print_results(file_results)
+    print_results(file_results, verbose)
 }
 
-func handle_args(name string) {
+func handle_args(name string, verbose bool) {
     state := get_file_state(name)
 
     if state == -1 {
@@ -249,20 +239,26 @@ func handle_args(name string) {
 
         for _, file := range files {
             if name[len(name) - 1] == '/' {
-                handle_args(name + file.Name())
+                handle_args(name + file.Name(), verbose)
             } else {
-                handle_args(name + "/" + file.Name())
+                handle_args(name + "/" + file.Name(), verbose)
             }
         }
     } else {
         if name[len(name)-2:] == ".c" || name[len(name)-2:] == ".h" {
-            check_style_file(name)
+            check_style_file(name, verbose)
         }
     }
 }
 
 func main() {
-    for _, arg := range os.Args[1:] {
-        handle_args(arg)
+    begin := 1
+    verbose := false
+    if os.Args[1] == "-v" || os.Args[1] == "--verbose" {
+        begin++
+        verbose = true
+    }
+    for _, arg := range os.Args[begin:] {
+        handle_args(arg, verbose)
     }
 }
