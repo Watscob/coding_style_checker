@@ -5,6 +5,7 @@ import (
     "io/ioutil"
     "os"
     "bufio"
+    "unicode"
     "github.com/gookit/color"
 )
 
@@ -97,6 +98,15 @@ func is_variable(line string) bool {
     return false
 }
 
+func is_blank_line(line string) bool {
+    for _, char := range line {
+        if unicode.IsLetter(char) || unicode.IsDigit(char) {
+            return false
+        }
+    }
+    return true
+}
+
 func check_function(fileScanner *bufio.Scanner) (bool, int, string) {
     function_line_nb := 0
     function_name := ""
@@ -115,10 +125,13 @@ func check_function(fileScanner *bufio.Scanner) (bool, int, string) {
         }
         if is_open_bracket(fileScanner.Text()) {
             for fileScanner.Scan() {
-                if (is_close_bracket(fileScanner.Text())) {
+                line_2 := fileScanner.Text()
+                if is_close_bracket(line_2) {
                     break
                 }
-                function_line_nb++
+                if !is_blank_line(line_2) {
+                    function_line_nb++
+                }
             }
         }
         return scope_static, function_line_nb, function_name
