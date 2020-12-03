@@ -192,6 +192,7 @@ func print_results(file_results results, verbose bool) {
 
 func check_style_file(filename string, verbose bool) {
     file, err := os.Open(filename)
+    defer file.Close()
     check_error(err)
 
     if verbose {
@@ -224,7 +225,6 @@ func check_style_file(filename string, verbose bool) {
     }
 
     check_error(fileScanner.Err())
-    file.Close()
     print_results(file_results, verbose)
 }
 
