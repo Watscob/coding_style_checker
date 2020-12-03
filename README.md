@@ -13,7 +13,9 @@ Do not use regex and expandable syntax such as `my_dir/*` or `*.c`
 ### Usage
 Go in the cloned directory and execute the following command
 ```sh
-go run main.go <directories/filenames>
+go run main.go [-v/--verbose] <directories/filenames>
+
+# -v/--verbose print a detail report
 
 # <directories/filenames> is a list of directories and/or filenames separed by one or more spaces
 
@@ -33,7 +35,9 @@ go build main.go
 
 ### Usage
 ```sh
-./main.go <directories/filenames>
+./main.go [-v/--verbose] <directories/filenames>
+
+# -v/--verbose print a detail report
 
 # <directories/filenames> is a list of directories and/or filenames separed by one or more spaces
 
