@@ -5,7 +5,7 @@ A tool to check certain features of the coding style in C files.
 If you put a file which is not a .c or .h file, the project will ignore it.
 
 ## Dependencies
-- [x] [go](https://golang.org/dl/)
+- [ ] [go](https://golang.org/dl/)
 
 ## Instructions to use the project without compiling it
 ### Usage
