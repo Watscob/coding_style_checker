@@ -165,27 +165,25 @@ func check_function(fileScanner *bufio.Scanner) (bool, int, string) {
 func print_results(file_results results, verbose bool) {
     if verbose {
         fmt.Println()
-        fmt.Printf("Variables:\n")
     }
     if file_results.nb_global_variables > MAX_GLOBAL_VARIABLE {
-        color.Printf("--> Global: %d\n", file_results.nb_global_variables)
+        color.Red.Printf("Variables --> Global: %d\n", file_results.nb_global_variables)
     }
     if verbose {
         fmt.Println()
-        fmt.Printf("Functions:\n")
     }
     if file_results.nb_functions_in_file > MAX_FUNCTIONS {
-        color.Red.Printf("-> Total: %d\n", file_results.nb_functions_in_file)
+        color.Red.Printf("Functions -> Total: %d\n", file_results.nb_functions_in_file)
     } else if verbose {
-        fmt.Printf("-> Total: %d\n", file_results.nb_functions_in_file)
+        fmt.Printf("Functions -> Total: %d\n", file_results.nb_functions_in_file)
     }
     if file_results.nb_functions_global > MAX_GLOBAL_FUNCTIONS {
-        color.Red.Printf("-> Global: %d\n", file_results.nb_functions_global)
+        color.Red.Printf("Functions -> Global: %d\n", file_results.nb_functions_global)
     } else if verbose {
-        fmt.Printf("-> Global: %d\n", file_results.nb_functions_global)
+        fmt.Printf("Functions -> Global: %d\n", file_results.nb_functions_global)
     }
     if verbose {
-        fmt.Printf("-> Static: %d\n", file_results.nb_functions_static)
+        fmt.Printf("Functions -> Static: %d\n", file_results.nb_functions_static)
         fmt.Println()
     }
 }
@@ -195,9 +193,7 @@ func check_style_file(filename string, verbose bool) {
     defer file.Close()
     check_error(err)
 
-    if verbose {
-        fmt.Printf("----- %s -----\n", filename)
-    }
+    fmt.Printf("----- %s -----\n", filename)
     file_results := results{0, 0, 0, 0}
 
     fileScanner := bufio.NewScanner(file)
@@ -254,10 +250,12 @@ func handle_args(name string, verbose bool) {
 func main() {
     begin := 1
     verbose := false
+
     if os.Args[1] == "-v" || os.Args[1] == "--verbose" {
         begin++
         verbose = true
     }
+
     for _, arg := range os.Args[begin:] {
         handle_args(arg, verbose)
     }
