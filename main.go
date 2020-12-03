@@ -213,7 +213,7 @@ func handle_args(name string) {
             }
         }
     } else {
-        if name[len(name)-2:] == ".c" {
+        if name[len(name)-2:] == ".c" || name[len(name)-2:] == ".h" {
             check_style_file(name)
         }
     }
