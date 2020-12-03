@@ -118,10 +118,23 @@ func is_single_line_comment(line string) bool {
     if line[i-2:i] == "//" {
         return true
     } else if line[i-2:i] == "/*" {
-        return line[len(line)-2:len(line)] == "*/"
+        return len(line) >= 2 && line[len(line)-2:len(line)] == "*/"
     } else {
         return false
     }
+}
+
+func is_begin_comment(line string) bool {
+    for i:= 2; i < len(line); i++ {
+        if line[i-2:i] == "/*" {
+            return true
+        }
+    }
+    return false
+}
+
+func is_end_comment(line string) bool {
+    return len(line) >= 2 && line[len(line) - 2:len(line)] == "*/"
 }
 
 func check_function(fileScanner *bufio.Scanner) (bool, int, string) {
@@ -146,6 +159,16 @@ func check_function(fileScanner *bufio.Scanner) (bool, int, string) {
                 if is_close_bracket(line_2) {
                     break
                 }
+                if !is_single_line_comment(line_2) && is_begin_comment(line_2) {
+                    for fileScanner.Scan() {
+                        line_2 = fileScanner.Text()
+                        if is_end_comment(line_2) {
+                            break
+                        }
+                    }
+                    fileScanner.Scan()
+                }
+                line_2 = fileScanner.Text()
                 if !is_blank_line(line_2) && !is_single_line_comment(line_2) {
                     function_line_nb++
                 }
