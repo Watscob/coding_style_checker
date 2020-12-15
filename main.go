@@ -95,7 +95,7 @@ func is_single_line_comment(line string) bool {
         }
     }
 
-    if len(line) == 0 {
+    if len(line) == 0 || i >= len(line) {
         return false
     } else if line[i-2:i] == "//" {
         return true
