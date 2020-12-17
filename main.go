@@ -4,6 +4,7 @@ import (
     "fmt"
     "io/ioutil"
     "os"
+    "os/exec"
     "bufio"
     "unicode"
     "github.com/gookit/color"
@@ -242,6 +243,8 @@ func handle_args(name string, verbose bool) {
         }
     } else {
         if name[len(name)-2:] == ".c" || name[len(name)-2:] == ".h" {
+            err := exec.Command("clang-format", "--verbose", "-i", name).Run()
+            check_error(err)
             check_style_file(name, verbose)
         }
     }
